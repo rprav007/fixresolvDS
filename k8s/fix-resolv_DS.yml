@@ -1,0 +1,44 @@
+apiVersion: "extensions/v1beta1"
+kind: DaemonSet
+metadata:
+  name: fix-resolv
+  namespace: fix-resolv
+  labels:
+    app: fix-resolv
+spec:
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: fix-resolv
+    spec:
+      containers:
+      - name: fix-resolv
+        image: quay.io/praveenr/fixresolv:3.0
+        imagePullPolicy: Always
+        env:
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - mountPath: /mnt/etc
+          name: node-etc
+          readOnly: false
+      dnsPolicy: Default
+      serviceAccountName: fix-resolv
+      tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: "node-role.kubernetes.io/node"
+        operator: "Exists"
+        effect: "NoSchedule"
+      nodeSelector:
+        node-role.kubernetes.io/node: ""
+      volumes:
+      - name: node-etc
+        hostPath:
+          path: /etc/
