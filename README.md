@@ -24,7 +24,7 @@ In order for the pods to pick up the changes, nodes require a reboot, which is a
 
 -> set kubeconfig to the appropriate cluster
 
--> cd JnJfixresolveDS
+-> cd fixresolveDS
 
 -> kubectl create -f k8s/
 
